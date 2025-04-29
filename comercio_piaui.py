@@ -194,7 +194,7 @@ try:
             with col1:
                 # Top 10 municípios
                 top_municipios_df = filtered_df.groupby('Município')['Valor US$ FOB'].sum().reset_index()
-                top_municipios_df = top_municipios_df.sort_values('Valor US$ FOB', ascending=False).head(10)
+                top_municipios_df = top_municipios_df.sort_values('Valor US$ FOB', ascending=True).tail(10)
                 
                 fig_top_municipios = px.bar(
                     top_municipios_df,
@@ -211,7 +211,7 @@ try:
             with col2:
                 # Top 10 países
                 top_paises_df = filtered_df.groupby('País')['Valor US$ FOB'].sum().reset_index()
-                top_paises_df = top_paises_df.sort_values('Valor US$ FOB', ascending=False).head(10)
+                top_paises_df = top_paises_df.sort_values('Valor US$ FOB', ascending=True).tail(10)
                 
                 fig_top_paises = px.bar(
                     top_paises_df,
