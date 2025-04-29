@@ -67,7 +67,6 @@ try:
     municipio_selecionado = st.sidebar.multiselect(
         "Selecione o(s) município(s):",
         options=['Todos'] + top_municipios,
-        default=['Todos']
     )
     
     # Filtro de país (top 15 + opção "Outros")
@@ -75,7 +74,6 @@ try:
     pais_selecionado = st.sidebar.multiselect(
         "Selecione o(s) país(es):",
         options=['Todos'] + top_paises,
-        default=['Todos']
     )
     
     # Filtro de seção
@@ -83,7 +81,6 @@ try:
     secao_selecionada = st.sidebar.multiselect(
         "Selecione a(s) seção(ões) de produtos:",
         options=['Todas'] + secoes,
-        default=['Todas']
     )
     
     # Aplicar filtros
