@@ -105,6 +105,7 @@ try:
     if filtered_df.empty:
         st.warning("Não há dados disponíveis para os filtros selecionados. Por favor, ajuste os filtros.")
     else:
+
         # Métricas principais
         col1, col2, col3, col4 = st.columns(4)
         
@@ -120,7 +121,8 @@ try:
         
         with col3:
             peso_filtrado = filtered_df['Quilograma Líquido'].sum()
-            st.metric("Volume Total (kg)", f"{peso_filtrado:,.2f}")
+            bilhoes_kg = peso_filtrado / 1_000_000_000
+            st.metric("Volume Total (Bilhões kg)", f"{bilhoes_kg:,.3f}")
         
         with col4:
             if peso_filtrado > 0:
@@ -186,6 +188,9 @@ try:
             with col2:
                 st.plotly_chart(fig_pie_secao, use_container_width=True)
         
+            st.subheader("Dados Detalhados")
+            st.dataframe(filtered_df)
+        
         with tab2:
             st.subheader("Análise Geográfica")
             
@@ -225,6 +230,25 @@ try:
                 )
                 st.plotly_chart(fig_top_paises, use_container_width=True)
             
+            st.subheader("Relação entre Valor e Peso")
+            
+            fig_scatter = px.scatter(
+                filtered_df,
+                x='Quilograma Líquido',
+                y='Valor US$ FOB',
+                color='Município',
+                size='Valor US$ FOB',
+                hover_name='Município',
+                log_x=True,
+                log_y=True,
+                title='Relação entre Valor US$ FOB e Quilograma Líquido',
+                labels={
+                    'Quilograma Líquido': 'Peso (kg) - escala logarítmica',
+                    'Valor US$ FOB': 'Valor (US$) - escala logarítmica'
+                }
+            )
+            st.plotly_chart(fig_scatter, use_container_width=True)
+
             # Mapa de calor: Município x País
             if len(filtered_df['Município'].unique()) <= 20 and len(filtered_df['País'].unique()) <= 20:
                 heatmap_data = filtered_df.pivot_table(
@@ -251,6 +275,23 @@ try:
                     color_continuous_scale=px.colors.sequential.Viridis
                 )
                 st.plotly_chart(fig_heatmap, use_container_width=True)
+
+                # Top 10 municípios
+            st.subheader("Top 10 Municípios por Valor Comercial")
+
+            top_municipios = filtered_df.groupby('Município')['Valor US$ FOB'].sum().reset_index()
+            top_municipios = top_municipios.sort_values('Valor US$ FOB', ascending=False).head(10)
+
+            fig_top_municipios = px.bar(
+                top_municipios,
+                x='Município',
+                y='Valor US$ FOB',
+                title='Top 10 Municípios por Valor Comercial',
+                labels={'Valor US$ FOB': 'Valor (US$ FOB)', 'Município': 'Município'},
+                color='Valor US$ FOB',
+                color_continuous_scale=px.colors.sequential.Viridis
+            )
+            st.plotly_chart(fig_top_municipios, use_container_width=True)
         
         with tab3:
             st.subheader("Análise por Produto")
