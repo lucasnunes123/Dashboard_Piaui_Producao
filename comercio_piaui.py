@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 from datetime import datetime
+import base64
 
 # Configuração da página
 st.set_page_config(
@@ -12,6 +13,29 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Caminho da imagem local
+image_path = "assets/logo-porto.png"
+
+# Converte imagem local em base64
+with open(image_path, "rb") as img_file:
+    base64_img = base64.b64encode(img_file.read()).decode()
+
+# Insere imagem como background no topo da sidebar
+st.markdown(f"""
+    <style>
+        [data-testid="stSidebar"]::before {{
+            content: "";
+            display: block;
+            background-image: url("data:image/png;base64,{base64_img}");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 120px;
+            margin: 20px 10px;
+        }}
+    </style>
+""", unsafe_allow_html=True)
 
 # Função para carregar os dados
 @st.cache_data
@@ -43,7 +67,7 @@ try:
     Este dashboard apresenta uma análise detalhada dos dados de comércio exterior dos municípios do Piauí 
     entre 2020 e 2025, incluindo exportações e importações, principais produtos, países e municípios.
     """)
-    
+
     # Sidebar para filtros
     st.sidebar.title("Filtros")
     
