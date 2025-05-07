@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 import numpy as np
 from datetime import datetime
 import base64
+from utils.data_loader import load_data, get_summary_stats
 
 # Configuração da página
 st.set_page_config(
@@ -49,6 +50,13 @@ def carregar_dados():
     df['Ano'] = df['Ano'].astype(int)
     
     return df
+
+@st.cache_data
+def get_data():
+    return load_data()
+
+df = get_data()
+stats = get_summary_stats(df)
 
 # Carregar os dados
 try:
