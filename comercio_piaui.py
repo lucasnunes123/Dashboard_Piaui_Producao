@@ -101,9 +101,9 @@ try:
     )
     
     # Filtro de seção
-    secoes = sorted(df['Descrição Seção'].unique())
+    secoes = sorted(df['Descrição SH4'].unique())
     secao_selecionada = st.sidebar.multiselect(
-        "Selecione a(s) seção(ões) de produtos:",
+        "Selecione a(s) tipos de produtos:",
         options=['Todas'] + secoes,
     )
     
@@ -123,7 +123,7 @@ try:
         filtered_df = filtered_df[filtered_df['País'].isin(pais_selecionado)]
     
     if 'Todas' not in secao_selecionada and secao_selecionada:
-        filtered_df = filtered_df[filtered_df['Descrição Seção'].isin(secao_selecionada)]
+        filtered_df = filtered_df[filtered_df['Descrição SH4'].isin(secao_selecionada)]
     
     # Verificar se há dados após a filtragem
     if filtered_df.empty:
@@ -325,7 +325,7 @@ try:
             with col1:
                 # Top 10 produtos (SH4)
                 top_produtos_df = filtered_df.groupby('Descrição SH4')['Valor US$ FOB'].sum().reset_index()
-                top_produtos_df = top_produtos_df.sort_values('Valor US$ FOB', ascending=False).head(10)
+                top_produtos_df = top_produtos_df.sort_values('Valor US$ FOB', ascending=True).tail(10)
                 
                 # Truncar nomes longos de produtos
                 top_produtos_df['Descrição SH4 Truncada'] = top_produtos_df['Descrição SH4'].str.slice(0, 50) + '...'
@@ -345,7 +345,7 @@ try:
             with col2:
                 # Valor médio por kg para as principais seções
                 valor_por_kg_df = filtered_df.groupby('Descrição Seção')['Valor por kg'].mean().reset_index()
-                valor_por_kg_df = valor_por_kg_df.sort_values('Valor por kg', ascending=False).head(10)
+                valor_por_kg_df = valor_por_kg_df.sort_values('Valor por kg', ascending=True).tail(10)
                 
                 # Truncar nomes longos de seções
                 valor_por_kg_df['Descrição Seção Truncada'] = valor_por_kg_df['Descrição Seção'].str.slice(0, 50) + '...'
