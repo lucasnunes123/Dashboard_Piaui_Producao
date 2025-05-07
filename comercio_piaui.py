@@ -5,7 +5,6 @@ import plotly.graph_objects as go
 import numpy as np
 from datetime import datetime
 import base64
-from utils.data_loader import load_data, get_summary_stats
 
 # Configuração da página
 st.set_page_config(
@@ -39,18 +38,21 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Função para carregar os dados
-
-
 @st.cache_data
-def get_data():
-    return load_data()
-
-df = get_data()
-stats = get_summary_stats(df)
+def carregar_dados():
+    df = pd.read_excel('data/Dados_POR MUNICIPIO_2020_2025.xlsx', sheet_name='Resultado')
+    
+    # Adicionar colunas calculadas
+    df['Valor por kg'] = df['Valor US$ FOB'] / df['Quilograma Líquido'].replace(0, np.nan)
+    
+    # Converter tipos de dados se necessário
+    df['Ano'] = df['Ano'].astype(int)
+    
+    return df
 
 # Carregar os dados
 try:
-    df = get_data()
+    df = carregar_dados()
     
     # Obter estatísticas gerais
     total_exportacao = df[df['Fluxo'] == 'Exportação']['Valor US$ FOB'].sum()
