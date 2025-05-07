@@ -103,7 +103,7 @@ try:
     # Filtro de seção
     secoes = sorted(df['Descrição SH4'].unique())
     secao_selecionada = st.sidebar.multiselect(
-        "Selecione a(s) tipos de produtos:",
+        "Selecione a(s) os produtos:",
         options=['Todas'] + secoes,
     )
     
