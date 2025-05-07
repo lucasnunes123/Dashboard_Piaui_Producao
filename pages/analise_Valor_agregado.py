@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
-from utils.data_loader import load_data
+from utils.data_loader import carregar_dados as load_data
 
 st.set_page_config(page_title="Análise de Valor Agregado", page_icon="💰", layout="wide")
 

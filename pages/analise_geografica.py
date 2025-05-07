@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import json
 import geopandas as gpd
-from utils.data_loader import load_data
+from utils.data_loader import carregar_dados as load_data
 
 st.set_page_config(page_title="Análise Geográfica", page_icon="🗺️", layout="wide")
 

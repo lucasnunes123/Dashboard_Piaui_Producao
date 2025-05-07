@@ -2,9 +2,8 @@
 import pandas as pd
 import numpy as np
 
-def load_data():
-    """Carrega os dados do arquivo Excel e realiza o pré-processamento básico."""
-    df = pd.read_excel('data\Dados_POR MUNICIPIO_2020_2025.xlsx', sheet_name='Resultado')
+def carregar_dados():
+    df = pd.read_excel('data/Dados_POR MUNICIPIO_2020_2025.xlsx', sheet_name='Resultado')
     
     # Adicionar colunas calculadas
     df['Valor por kg'] = df['Valor US$ FOB'] / df['Quilograma Líquido'].replace(0, np.nan)

@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from utils.data_loader import load_data, get_summary_stats
+from utils.data_loader import carregar_dados as load_data, get_summary_stats
 
 # Configuração da página
 st.set_page_config(
