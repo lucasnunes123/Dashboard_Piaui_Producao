@@ -2,4 +2,5 @@
 
 <h3>Dashboard de Produções para a Cia. Porto Piauí feito com Streamlit</h3>
 
-<a href="https://comercial-piaui-dados.streamlit.app/">Acesse aqui</a>
+
+<p><a href="https://comercial-piaui-dados.streamlit.app/" target="_blank" rel="noopener noreferrer" >Acesse aqui</a></p>
