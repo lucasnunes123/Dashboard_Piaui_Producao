@@ -12,12 +12,12 @@ with open("assets/boletim.pdf", "rb") as f:
 with open("assets/boletim.pdf", "rb") as f:
     pdf_data = f.read()
 
-#st.image("assets/bol2.jpg", width=300)
+st.image("assets/bol2.jpg", width=300)
 
 st.markdown(
     """
     <div style="text-align: left;">
-        <img src="assets/bol2.jpg" width="300">
+        <img src="http://localhost:8501/media/5e6ca2d8904aa2de2697fabfa2efb2caf2d956b01615ac3f5d2a48f9.jpg" width="300">
     </div>
     """,
     unsafe_allow_html=True
