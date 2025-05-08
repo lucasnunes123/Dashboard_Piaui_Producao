@@ -17,3 +17,12 @@ pdf_display = f"""
 """
 
 st.markdown(pdf_display, unsafe_allow_html=True)
+
+
+with open("assets/boletim.pdf", "rb") as f:
+    pdf_data = f.read()
+
+st.download_button(label="📄 Baixar PDF",
+                   data=pdf_data,
+                   file_name="meuarquivo.pdf",
+                   mime="application/pdf")
