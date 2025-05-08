@@ -12,7 +12,16 @@ with open("assets/boletim.pdf", "rb") as f:
 with open("assets/boletim.pdf", "rb") as f:
     pdf_data = f.read()
 
-st.image("assets/bol2.jpg", width=300)
+#st.image("assets/bol2.jpg", width=300)
+
+st.markdown(
+    """
+    <div style="text-align: left;">
+        <img src="assets/bol2.jpg" width="300">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.download_button(label="📄 Baixar PDF",
                    data=pdf_data,
