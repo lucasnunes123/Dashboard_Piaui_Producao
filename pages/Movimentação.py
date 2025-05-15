@@ -127,21 +127,29 @@ else:
     st.sidebar.text("Coluna 'ETB' não disponível para filtro de período.")
     selected_period = None
 
-def create_multiselect_filter(column_name, label):
+def create_multiselect_filter(column_name, label, default=None):
     if column_name in df.columns:
         options = sorted(df[column_name].astype(str).unique().tolist())
-        if "Não especificado" in options:
-             options.remove("Não especificado")
-             options.insert(0, "Não especificado") # Coloca no topo
         
-        selected_options = st.sidebar.multiselect(label, options, default=options)
-        if selected_options != options: # Se o usuário mudou a seleção padrão (todos)
-             return df[df[column_name].isin(selected_options)]
+        if "Não especificado" in options:
+            options.remove("Não especificado")
+            options.insert(0, "Não especificado")  # Coloca no topo
+
+        # Define default para todas as opções se não for informado
+        if default is None:
+            default = options
+
+        selected_options = st.sidebar.multiselect(label, options, default=default)
+
+        if selected_options != options:  # Se o usuário mudou a seleção padrão (todos)
+            return df[df[column_name].isin(selected_options)]
     else:
         st.sidebar.text(f"Coluna '{column_name}' não disponível para filtro.")
+    
     return df
 
-df = create_multiselect_filter("Port", "Porto")
+
+df = create_multiselect_filter("Port", "Porto", default=['Santos'])
 df = create_multiselect_filter("Terminal", "Terminal")
 df = create_multiselect_filter("Berth", "Berço")
 df = create_multiselect_filter("Cargo Type", "Tipo de Carga")
