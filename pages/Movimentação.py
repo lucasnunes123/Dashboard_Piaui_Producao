@@ -149,7 +149,7 @@ def create_multiselect_filter(column_name, label, default=None):
     return df
 
 
-df = create_multiselect_filter("Port", "Porto", default=['Santos'])
+df = create_multiselect_filter("Port", "Porto", default=['Belém'])
 df = create_multiselect_filter("Terminal", "Terminal")
 df = create_multiselect_filter("Berth", "Berço")
 df = create_multiselect_filter("Cargo Type", "Tipo de Carga")
