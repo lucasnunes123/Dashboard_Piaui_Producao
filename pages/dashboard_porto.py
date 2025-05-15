@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import plotly.express as px
 
 # Configuração da página
 st.set_page_config(layout="wide", page_title="Dashboard de Movimentações Portuárias")
@@ -212,7 +213,6 @@ else:
             st.info("Sem dados de rotas para os filtros selecionados.")
 
 # Adicionar import para plotly express se for usar gráficos de pizza mais elaborados
-import plotly.express as px
 
 # Nota: Este é um script inicial. Mais indicadores e visualizações serão adicionados.
 # A lógica de conversão do "Tempo de estada" pode precisar de ajuste fino dependendo da natureza exata dos dados.
