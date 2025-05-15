@@ -18,7 +18,7 @@ def load_and_preprocess_data(file_path):
 
         # --- Pré-processamento --- 
         # 1. Tratar "Type of Operation"
-        type_of_operation_map = {1.0: "Atracação", 2.0: "Desatracação"}
+        type_of_operation_map = {1.0: "Exportação", 2.0: "Importação"}
         df["Type of Operation"] = df["Type of Operation"].map(type_of_operation_map).fillna("Não especificado")
 
         # 2. Converter "Tempo de estada" para dias numéricos
@@ -63,7 +63,7 @@ def load_and_preprocess_data(file_path):
             "Charterer Nome": "Não especificado",
             "Inward/Outward Agent": "Não especificado",
             "Vessel": "Não especificado",
-            "Region\n Origin/Destiny": "Não especificado"
+            "Origin/Destiny": "Não especificado"
         }
         for col, fill_value in cols_to_clean_fillna.items():
             if col in df.columns:
@@ -108,7 +108,7 @@ if 'ETB' in df.columns and not df['ETB'].isnull().all():
     min_date = df["ETB"].min()
     max_date = df["ETB"].max()
     if pd.isna(min_date) or pd.isna(max_date):
-        st.sidebar.warning("Não foi possível determnar o período para o filtro de data (ETB).")
+        st.sidebar.warning("Não foi possível determinar o período para o filtro de data (ETB).")
         selected_period = None
     else:
         selected_period = st.sidebar.date_input(
@@ -202,10 +202,10 @@ else:
             st.info("Sem dados de desempenho por armador para os filtros selecionados.")
 
     # Gráfico 4: Principais Rotas (Origem/Destino)
-    if "Region\n Origin/Destiny" in df.columns:
+    if "Origin/Destiny" in df.columns:
         st.subheader("Principais Rotas (Origem/Destino)")
         # Contagem de ocorrências da coluna "Region\n Origin/Destiny"
-        principais_rotas = df["Region\n Origin/Destiny"].value_counts().sort_values(ascending=False)
+        principais_rotas = df["Origin/Destiny"].value_counts().sort_values(ascending=False)
         if not principais_rotas.empty:
             st.bar_chart(principais_rotas.head(20)) # Top 20
         else:
@@ -218,5 +218,4 @@ import plotly.express as px
 # A lógica de conversão do "Tempo de estada" pode precisar de ajuste fino dependendo da natureza exata dos dados.
 # A limpeza de dados também pode ser mais extensa.
 
-st.sidebar.info("Desenvolvido por Manus AI")
 
