@@ -245,6 +245,7 @@ def main_dashboard():
     
             # Título da página
         st.title("Mapa de Oportunidades para as Exportações Brasileiras para o mundo - Apex Brasil")
+        st.link_button("Abrir Painel Apex", "https://apexbrasil.com.br/content/apexbrasil/br/pt/solucoes/inteligencia/painel-de-inteligencia-comercial/mapa-estrategico-de-mercados-e-oportunidades-comerciais-para-as-/mapa-de-oportunidades-para-as-exportacoes-globais.html")
 
         # Código HTML com o iframe
         iframe_code = """
