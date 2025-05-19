@@ -5,7 +5,7 @@ import plotly.express as px
 import hashlib
 
 # Configuração da página
-st.set_page_config(layout="wide", page_title="Dashboard de Movimentações Portuárias")
+st.set_page_config(layout="wide", page_title="Movimentações Portuárias")
 
 # Função para criar hash de senha
 def make_hashes(password):
@@ -111,7 +111,7 @@ if 'username' not in st.session_state:
     st.session_state['username'] = ''
 
 def login_page():
-    st.title("🔐 Login - Dashboard de Movimentações Portuárias")
+    st.title("🔐 Login - Movimentações Portuárias")
     with st.form("login_form"):
         username = st.text_input("Usuário")
         password = st.text_input("Senha", type="password")
@@ -141,7 +141,7 @@ def main_dashboard():
 
     col1, col2 = st.columns([10, 2])
     with col1:
-        st.title("🚢 Dashboard de Movimentações Portuárias")
+        st.title("🚢 Movimentações Portuárias")
         st.markdown(f"Bem-vindo, **{st.session_state['username']}**! Análise interativa das operações e desempenho portuário.")
     with col2:
         st.button("Logout", on_click=logout, type="primary")
@@ -243,7 +243,6 @@ def main_dashboard():
             else:
                 st.info("Sem dados de rotas para os filtros selecionados.")
 
-    st.sidebar.info("Desenvolvido por Manus AI")
 
 if st.session_state['logged_in']:
     main_dashboard()
