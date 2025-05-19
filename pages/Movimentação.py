@@ -243,7 +243,6 @@ def main_dashboard():
             else:
                 st.info("Sem dados de rotas para os filtros selecionados.")
 
-    st.sidebar.info("Desenvolvido por Manus AI")
 
 if st.session_state['logged_in']:
     main_dashboard()
