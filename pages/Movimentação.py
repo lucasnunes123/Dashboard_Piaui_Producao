@@ -242,6 +242,23 @@ def main_dashboard():
                 st.bar_chart(principais_rotas.head(20))
             else:
                 st.info("Sem dados de rotas para os filtros selecionados.")
+    
+            # Título da página
+        st.title("Mapa de Oportunidades para as Exportações Brasileiras para o mundo - Apex Brasil")
+
+        # Código HTML com o iframe
+        iframe_code = """
+        <iframe 
+            src="https://apexbrasil.com.br/content/apexbrasil/br/pt/solucoes/inteligencia/painel-de-inteligencia-comercial/mapa-estrategico-de-mercados-e-oportunidades-comerciais-para-as-/mapa-de-oportunidades-para-as-exportacoes-globais.html" 
+            width="100%" 
+            height="500" 
+            frameborder="0" 
+            allowfullscreen>
+        </iframe>
+        """
+
+        # Exibe o iframe
+        st.components.v1.html(iframe_code, height=500)
 
 
 if st.session_state['logged_in']:

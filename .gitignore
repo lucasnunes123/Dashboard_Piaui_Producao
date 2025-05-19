@@ -1,0 +1,5 @@
+__pycache__/
+.devcontainer/
+
+poetry.lock
+pages/teste.py
