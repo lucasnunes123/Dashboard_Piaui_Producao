@@ -191,7 +191,7 @@ def main_dashboard():
     df = create_multiselect_filter("Cargo Type", "Tipo de Carga")
     df = create_multiselect_filter("Charterer Nome", "Armador (Charterer)")
     df = create_multiselect_filter("Inward/Outward Agent", "Agente")
-    df = create_multiselect_filter("Vessel", "Navio")
+    #df = create_multiselect_filter("Vessel", "Navio")
 
     # if st.sidebar.checkbox("Mostrar dados filtrados (primeiras 100 linhas)"):
     #     st.subheader("Dados Filtrados")
