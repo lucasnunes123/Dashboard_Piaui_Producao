@@ -209,16 +209,44 @@ def main_dashboard():
         st.markdown("--- ")
         st.markdown("### Visualizações Detalhadas")
 
-        if "Cargo Type" in df.columns and "Qtty" in df.columns:
-            st.subheader("Movimentação por Tipo de Carga")
-            mov_por_carga = df.groupby("Cargo Type")["Qtty"].sum().sort_values(ascending=False)
-            if not mov_por_carga.empty:
-                if len(mov_por_carga) <= 5:
-                    st.plotly_chart(px.pie(mov_por_carga, values="Qtty", names=mov_por_carga.index, title="Distribuição de Quantidade por Tipo de Carga"), use_container_width=True)
-                else:
-                    st.bar_chart(mov_por_carga)
+    if "Cargo Type" in df.columns and "Qtty" in df.columns:
+        st.subheader("Movimentação por Tipo de Carga")
+
+        # Agrupar e somar as quantidades por tipo de carga
+        mov_por_carga = (
+            df.groupby("Cargo Type")["Qtty"]
+            .sum()
+            .sort_values(ascending=False)
+        )
+
+        if not mov_por_carga.empty:
+            if len(mov_por_carga) <= 5:
+                # Gráfico de pizza se tiver até 5 categorias
+                fig = px.pie(
+                    mov_por_carga.reset_index(),
+                    values="Qtty",
+                    names="Cargo Type",
+                    title="Distribuição de Quantidade por Tipo de Carga"
+                )
+                st.plotly_chart(fig, use_container_width=True)
             else:
-                st.info("Sem dados de movimentação por tipo de carga para os filtros selecionados.")
+                # Gráfico de barras se tiver mais de 5 categorias
+                chart_data = pd.DataFrame({
+                    'Tipo de Carga': mov_por_carga.index,
+                    'Quantidade Movimentada': mov_por_carga.values
+                })
+
+                chart = alt.Chart(chart_data).mark_bar().encode(
+                    x=alt.X('Tipo de Carga:N', sort=list(chart_data['Tipo de Carga'])),
+                    y=alt.Y('Quantidade Movimentada:Q')
+                ).properties(
+                    width=700,
+                    height=400
+                )
+
+                st.altair_chart(chart, use_container_width=True)
+        else:
+            st.info("Sem dados de movimentação por tipo de carga para os filtros selecionados.")
 
         if "Berth" in df.columns and "Vessel" in df.columns:
             st.subheader("Número de Navios Atendidos por Berço")
