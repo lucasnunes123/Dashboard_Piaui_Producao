@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import hashlib
+import altair as alt
 
 # Configuração da página
 st.set_page_config(layout="wide", page_title="Movimentações Portuárias")
@@ -221,27 +222,89 @@ def main_dashboard():
 
         if "Berth" in df.columns and "Vessel" in df.columns:
             st.subheader("Número de Navios Atendidos por Berço")
-            navios_por_berco = df.groupby("Berth")["Vessel"].nunique().sort_values(ascending=False)
+
+            navios_por_berco = df.groupby("Berth")["Vessel"].nunique().sort_values(ascending=False).head(20)
+
             if not navios_por_berco.empty:
-                st.bar_chart(navios_por_berco.head(20))
+                chart_data = pd.DataFrame({
+                    'Berth': navios_por_berco.index,
+                    'Número de Navios': navios_por_berco.values
+                })
+
+                chart = alt.Chart(chart_data).mark_bar().encode(
+                    x=alt.X('Berth:N', sort=list(chart_data['Berth'])),  # Ordenação explícita
+                    y=alt.Y('Número de Navios:Q')
+                ).properties(
+                    width=700,
+                    height=400
+                )
+
+                st.altair_chart(chart, use_container_width=True)
             else:
                 st.info("Sem dados de navios por berço para os filtros selecionados.")
 
         if "Charterer Nome" in df.columns and "Qtty" in df.columns:
             st.subheader("Desempenho por Armador (Quantidade Total Movimentada)")
-            desempenho_armador = df.groupby("Charterer Nome")["Qtty"].sum().sort_values(ascending=False)
+
+            # Agrupar e somar a quantidade por armador
+            desempenho_armador = (
+                df.groupby("Charterer Nome")["Qtty"]
+                .sum()
+                .sort_values(ascending=False)
+                .head(20)
+            )
+
             if not desempenho_armador.empty:
-                st.bar_chart(desempenho_armador.head(20))
+                # Preparar dados para o gráfico
+                chart_data = pd.DataFrame({
+                    'Armador': desempenho_armador.index,
+                    'Quantidade Movimentada': desempenho_armador.values
+                })
+
+                # Criar gráfico de barras ordenado
+                chart = alt.Chart(chart_data).mark_bar().encode(
+                    x=alt.X('Armador:N', sort=list(chart_data['Armador'])),
+                    y=alt.Y('Quantidade Movimentada:Q')
+                ).properties(
+                    width=700,
+                    height=400
+                )
+
+                st.altair_chart(chart, use_container_width=True)
             else:
                 st.info("Sem dados de desempenho por armador para os filtros selecionados.")
 
         if "Origin/Destiny" in df.columns:
             st.subheader("Principais Rotas (Origem/Destino)")
-            principais_rotas = df["Origin/Destiny"].value_counts().sort_values(ascending=False)
+
+            # Contagem das rotas mais frequentes
+            principais_rotas = (
+                df["Origin/Destiny"]
+                .value_counts()
+                .sort_values(ascending=False)
+                .head(20)
+            )
+
             if not principais_rotas.empty:
-                st.bar_chart(principais_rotas.head(20))
+                # Preparar dados para o gráfico
+                chart_data = pd.DataFrame({
+                    'Rota': principais_rotas.index,
+                    'Frequência': principais_rotas.values
+                })
+
+                # Criar gráfico de barras ordenado
+                chart = alt.Chart(chart_data).mark_bar().encode(
+                    x=alt.X('Rota:N', sort=list(chart_data['Rota'])),
+                    y=alt.Y('Frequência:Q')
+                ).properties(
+                    width=700,
+                    height=400
+                )
+
+                st.altair_chart(chart, use_container_width=True)
             else:
                 st.info("Sem dados de rotas para os filtros selecionados.")
+
     
             # Título da página
         st.title("Mapa de Oportunidades para as Exportações Brasileiras para o mundo - Apex Brasil")
