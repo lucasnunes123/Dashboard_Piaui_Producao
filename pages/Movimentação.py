@@ -4,6 +4,8 @@ import numpy as np
 import plotly.express as px
 import hashlib
 import altair as alt
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
 
 # Configuração da página
 st.set_page_config(layout="wide", page_title="Movimentações Portuárias")
