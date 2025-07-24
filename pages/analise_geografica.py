@@ -51,7 +51,7 @@ if geojson_data:
         municipio_data,
         geojson=geojson_data,
         locations='Município',
-        featureidkey='properties.nome',
+        featureidkey='properties.NM_MUN',
         color='Valor US$ FOB',
         color_continuous_scale="Viridis",
         mapbox_style="carto-positron",
