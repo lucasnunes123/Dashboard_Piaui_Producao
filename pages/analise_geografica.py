@@ -32,8 +32,11 @@ st.markdown("Visualização da distribuição geográfica do comércio exterior 
 
 # Filtros
 col1, col2 = st.columns(2)
+
 with col1:
-    ano_selecionado = st.selectbox("Selecione o ano:", options=sorted(df['Ano'].unique()))
+    anos = sorted(df['Ano'].unique())
+    ano_selecionado = st.selectbox("Selecione o ano:", options=anos, index=anos.index(2025) if 2025 in anos else 0)
+
 with col2:
     fluxo_selecionado = st.selectbox("Tipo de fluxo:", options=df['Fluxo'].unique())
 
@@ -58,7 +61,9 @@ if geojson_data:
         zoom=6,
         center={"lat": -7.7, "lon": -42.7},  # Coordenadas aproximadas do Piauí
         opacity=0.7,
-        labels={'Valor US$ FOB': 'Valor (US$ FOB)'}
+        labels={'Valor US$ FOB': 'Valor (US$ FOB)'},
+        width=400,
+        height=900
     )
     st.plotly_chart(fig, use_container_width=True)
 else:
