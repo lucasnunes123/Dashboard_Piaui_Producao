@@ -87,14 +87,14 @@ try:
     )
     
     # Filtro de município (top 15 + opção "Outros")
-    top_municipios = df.groupby('Município')['Valor US$ FOB'].sum().nlargest(15).index.tolist()
+    top_municipios = df.groupby('Município')['Valor US$ FOB'].sum().index.tolist()
     municipio_selecionado = st.sidebar.multiselect(
         "Selecione o(s) município(s):",
         options=['Todos'] + top_municipios,
     )
     
     # Filtro de país (top 15 + opção "Outros")
-    top_paises = df.groupby('País')['Valor US$ FOB'].sum().nlargest(15).index.tolist()
+    top_paises = df.groupby('País')['Valor US$ FOB'].sum().index.tolist()
     pais_selecionado = st.sidebar.multiselect(
         "Selecione o(s) país(es):",
         options=['Todos'] + top_paises,
@@ -189,6 +189,11 @@ try:
             # Gráfico de pizza: Distribuição por seção
             dist_secao = filtered_df.groupby('Descrição Seção')['Valor US$ FOB'].sum().reset_index()
             dist_secao = dist_secao.sort_values('Valor US$ FOB', ascending=False)
+
+            # limitar o tamanho dos nomes das seções
+            dist_secao['Descrição Seção'] = dist_secao['Descrição Seção'].apply(
+             lambda x: x if len(x) <= 20 else x[:17] + '...')
+
             
             # Limitar a 10 principais seções e agrupar o resto como "Outros"
             if len(dist_secao) > 10:
@@ -363,6 +368,9 @@ try:
                 st.plotly_chart(fig_valor_kg, use_container_width=True)
             
             # Gráfico de dispersão: Valor vs Peso por Seção
+
+            # Truncar nomes longos de seções
+            filtered_df['Descrição Seção'] = filtered_df['Descrição Seção'].str.slice(0, 50) + '...'
             fig_scatter = px.scatter(
                 filtered_df,
                 x='Quilograma Líquido',
