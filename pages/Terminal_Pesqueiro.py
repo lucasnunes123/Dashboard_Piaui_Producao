@@ -156,6 +156,8 @@ with col_l2:
     plt.xticks(rotation=45, ha='right')
     st.pyplot(fig4)
 
+st.image("assets/luis.png", width=800)
+
 
 st.markdown("---")
 # --- 6. Tabela de Detalhes ---
