@@ -228,7 +228,7 @@ try:
             with col1:
                 # Top 10 municípios
                 top_municipios_df = filtered_df.groupby('Município')['Valor US$ FOB'].sum().reset_index()
-                top_municipios_df = top_municipios_df.sort_values('Valor US$ FOB', ascending=True).tail(10)
+                top_municipios_df = top_municipios_df.sort_values('Valor US$ FOB', ascending=True)  
                 
                 fig_top_municipios = px.bar(
                     top_municipios_df,
