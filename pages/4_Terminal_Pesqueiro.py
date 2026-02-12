@@ -8,8 +8,37 @@ import base64
 # Configuração da página
 st.set_page_config(layout="wide", page_title="Dashboard Terminal Pesqueiro")
 
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-image: url("data:image/png;base64,{encoded_string.decode()}");
+        background-attachment: fixed;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: 170% 0%;
+    }}
+    
+    /* fundo levemente transparente aos blocos de conteúdo */
 
-# Imagem terminal
+    [data-testid="stVerticalBlock"] > div {{
+        background-color: rgba(255, 255, 255, 0.8); 
+        border-radius: 10px;
+        padding: 10px;
+    }}
+    </style>
+
+    """, # Note: em versões novas use unsafe_allow_html=True
+    unsafe_allow_html=True
+    )
+
+# Chame a função com o caminho da sua imagem
+add_bg_from_local('assets/TP/logo_rede_A.png')
+
+# ------------------------ Imagem terminal ---------------------------
 image_path = "assets/TP/TPLC_Horizontal.jpg"
 
 with open(image_path, "rb") as img_file:
@@ -105,6 +134,7 @@ col_g1, col_g2, col_g3 = st.columns(3)
 with col_g1:
     st.subheader("📊 Quem compra o pescado")
     destino = df_filtrado['Destino_Pescado'].str.split(',').explode().str.strip().value_counts().head(8).reset_index()
+    destino = destino.sort_values('count', ascending=True)
     destino.columns = ['Destino', 'Quantidade']
     fig1 = px.bar(destino, x="Quantidade", y="Destino", orientation='h',
                   color="Quantidade", color_continuous_scale="blues",
@@ -116,13 +146,14 @@ with col_g1:
 with col_g2:
     st.subheader("🐟 Top espécies (canal)")
     top_peixes = get_top_items(df_filtrado['Peixes_Canal'])
+    top_peixes = top_peixes.sort_values('count', ascending=True)
     fig2 = px.bar(top_peixes, x="count", y="item", orientation='h',
                   color="count", color_continuous_scale="viridis",
                   text_auto=True, title="Mais citadas")
     fig2.update_layout(showlegend=False, xaxis_title="", yaxis_title="")
     st.plotly_chart(fig2, use_container_width=True)
 
-# 3. Idade dos pescadores
+# 3. Histograma idade dos pescadores
 with col_g3:
     st.subheader("👤 Distribuição de Idade")
     fig_idade = px.histogram(df_filtrado, x="Idade", nbins=15,
@@ -160,6 +191,7 @@ with col_l2:
 with col_l3:
     st.subheader("🪝 Top Iscas Utilizadas")
     top_isca = get_top_items(df_filtrado['Isca'])
+    top_isca = top_isca.sort_values('count', ascending=True)
     fig_isca = px.bar(top_isca, x="count", y="item", orientation='h',
                       color="count", color_continuous_scale="greens",
                       text_auto=True, title="Mais citadas")
@@ -209,6 +241,17 @@ with col_a2:
 
 st.markdown("---")
 
+# Carrosel imagens
+tab1, tab2, tab3 = st.tabs(["Imagem A", "Imagem B", "Imagem C"])
+
+with tab1:
+    st.image("assets/TP/CSL/1.jpg")
+with tab2:
+    st.image("assets/TP/CSL/2.jpg")
+with tab3:
+    st.image("assets/TP/CSL/3.jpg")
+
+
 # Tabela final
 st.subheader("Dados Brutos (amostra filtrada)")
 st.dataframe(
@@ -220,4 +263,4 @@ st.dataframe(
 
 # Rodapé
 st.markdown("---")
-st.caption("Dashboard construído com base nas entrevistas realizadas no Terminal Pesqueiro")
+st.caption("Dashboard construído com base nas entrevistas realizadas pela Cia. Portos e hidrovias do Piaui.")
