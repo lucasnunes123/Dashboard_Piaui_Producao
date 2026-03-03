@@ -31,7 +31,7 @@ def add_bg_from_local(image_file):
     }}
     </style>
 
-    """, # Note: em versões novas use unsafe_allow_html=True
+    """,
     unsafe_allow_html=True
     )
 
@@ -107,7 +107,7 @@ def get_top_items(series, top_n=6):
     return counts.reset_index().rename(columns={'index':'item', 0:'count'})
 
 # ─── KPIs ────────────────────────────────────────────────────────────────────
-st.title("🐟 DADOS PESQUEIROS PIAUI")
+st.title("🐟 DADOS PESQUEIROS PIAUI 2024")
 st.markdown("---")
 
 col1, col2, col3, col4, col5 = st.columns(5)

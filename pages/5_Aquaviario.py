@@ -37,7 +37,7 @@ genero = st.sidebar.multiselect(
 df_filtered = df[(df["Comunidade"].isin(comunidade)) & (df["Genero"].isin(genero))]
 
 # --- DASHBOARD PRINCIPAL ---
-st.title("📊 Diagnóstico da Atividade Pesqueira")
+st.title("📊 Diagnóstico da Atividade Pesqueira 2026")
 st.markdown(f"Exibindo dados de **{len(df_filtered)}** pescadores entrevistados.")
 
 # Linha 1: Métricas e Perfil
@@ -90,5 +90,5 @@ with col4:
     st.plotly_chart(fig_fatores, use_container_width=True)
 
 # Visualização da Tabela
-if st.checkbox("Mostrar dados brutos"):
-    st.dataframe(df_filtered)
+#if st.checkbox("Mostrar dados brutos"):
+ #   st.dataframe(df_filtered)
