@@ -5,133 +5,139 @@ import plotly.express as px
 import plotly.graph_objects as go
 import base64
 
-# Configuração da página
+# ─── CONFIGURAÇÃO DA PÁGINA ──────────────────────────────────────────────────
 st.set_page_config(layout="wide", page_title="Dashboard Terminal Pesqueiro")
 
 def add_bg_from_local(image_file):
-    with open(image_file, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read())
-    st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background-image: url("data:image/png;base64,{encoded_string.decode()}");
-        background-attachment: fixed;
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: 170% 0%;
-    }}
-    
-    /* fundo levemente transparente aos blocos de conteúdo */
+    try:
+        with open(image_file, "rb") as f:
+            encoded_string = base64.b64encode(f.read())
+        st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("data:image/png;base64,{encoded_string.decode()}");
+                background-attachment: fixed;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: 170% 0%;
+            }}
+            [data-testid="stVerticalBlock"] > div {{
+                background-color: rgba(255, 255, 255, 0.8); 
+                border-radius: 10px;
+                padding: 10px;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+    except:
+        pass
 
-    [data-testid="stVerticalBlock"] > div {{
-        background-color: rgba(255, 255, 255, 0.8); 
-        border-radius: 10px;
-        padding: 10px;
-    }}
-    </style>
-
-    """,
-    unsafe_allow_html=True
-    )
-
-# Chame a função com o caminho da sua imagem
 add_bg_from_local('assets/TP/logo_rede_A.png')
 
-# ------------------------ Imagem terminal ---------------------------
-image_path = "assets/TP/TPLC_Horizontal.jpg"
+# Imagem no Sidebar
+try:
+    with open("assets/TP/TPLC_Horizontal.jpg", "rb") as img_file:
+        base64_img = base64.b64encode(img_file.read()).decode()
+    st.markdown(f"""
+        <style>
+            [data-testid="stSidebar"]::before {{
+                content: "";
+                display: block;
+                background-image: url("data:image/png;base64,{base64_img}");
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+                height: 120px;
+                margin: 20px 10px;
+            }}
+        </style>
+    """, unsafe_allow_html=True)
+except:
+    pass
 
-with open(image_path, "rb") as img_file:
-    base64_img = base64.b64encode(img_file.read()).decode()
+# ─── FUNÇÕES AUXILIARES ───────────────────────────────────────────────────────
+def get_top_items(series, top_n=6):
+    all_items = series.dropna().astype(str).str.lower().str.replace(r'[./]', ',', regex=True).str.strip()
+    items_list = [item.strip() for sublist in all_items.str.split(',') for item in sublist if item.strip()]
+    counts = pd.Series(items_list).value_counts().head(top_n)
+    return counts.reset_index().rename(columns={'index':'item', 'count':'count'})
 
-st.markdown(f"""
-    <style>
-        [data-testid="stSidebar"]::before {{
-            content: "";
-            display: block;
-            background-image: url("data:image/png;base64,{base64_img}");
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            height: 120px;
-            margin: 20px 10px;
-        }}
-    </style>
-""", unsafe_allow_html=True)
-
-# ─── CARREGAMENTO E PRÉ-PROCESSAMENTO ────────────────────────────────────────
 @st.cache_data
 def load_data_2024(file_path):
     df = pd.read_excel(file_path)
-    
     df.columns = [
         'Nome', 'Idade', 'Destino_Pescado', 'Arte_Pesca', 'Isca', 'Local_Isca', 
         'Pesca_Noite_Hora', 'Melhor_Pior_Epoca', 'Dias_Pesca_Melhor_Epoca', 
         'Kilos_Medios', 'Rede_Espera', 'Kilos_Mar_Ruim', 'Tempo_Pesca_Horas', 
         'Influencia_Lua_Melhor', 'Peixes_Canal', 'Bichos_Marinhos', 'Local'
     ]
-    
-    # Conversões numéricas
     df['Idade'] = pd.to_numeric(df['Idade'], errors='coerce')
-    df['Kilos_Medios_Num']   = df['Kilos_Medios'].str.extract('(\d+)').astype(float).fillna(0)
-    df['Kilos_Mar_Ruim_Num'] = df['Kilos_Mar_Ruim'].str.extract('(\d+)').astype(float).fillna(0)
-    df['Tempo_Pesca_Horas_Num'] = df['Tempo_Pesca_Horas'].str.extract('(\d+)').astype(float).fillna(0)
-    df['Dias_Pesca_Num'] = df['Dias_Pesca_Melhor_Epoca'].replace('Todos os dias', '7').str.extract('(\d+)').astype(float).fillna(0)
-    
-    # Coluna auxiliar: pesca noturna?
+    df['Kilos_Medios_Num'] = df['Kilos_Medios'].astype(str).str.extract('(\d+)').astype(float).fillna(0)
+    df['Kilos_Mar_Ruim_Num'] = df['Kilos_Mar_Ruim'].astype(str).str.extract('(\d+)').astype(float).fillna(0)
+    df['Tempo_Pesca_Horas_Num'] = df['Tempo_Pesca_Horas'].astype(str).str.extract('(\d+)').astype(float).fillna(0)
+    df['Dias_Pesca_Num'] = df['Dias_Pesca_Melhor_Epoca'].replace('Todos os dias', '7').astype(str).str.extract('(\d+)').astype(float).fillna(0)
     df['Pesca_Noturna'] = df['Pesca_Noite_Hora'].str.contains('Sim', case=False, na=False)
-    
     return df
 
-try:
-    df = load_data_2024("data/tabela_combinada_final.xlsx")
-except Exception as e:
-    st.error(f"Erro ao carregar os dados: {e}")
-    st.stop()
+@st.cache_data
+def load_data_2026(file_path):
+    df = pd.read_excel(file_path)
+    cols_texto = df.select_dtypes(include=['object']).columns
+    for col in cols_texto:
+        df[col] = df[col].str.strip().str.upper()
+    return df
 
-# ─── FILTRO GLOBAL ───────────────────────────────────────────────────────────
-st.sidebar.header("Filtros")
-locais_disponiveis = ["Todos"] + sorted(df['Local'].dropna().unique().tolist())
-local_selecionado = st.sidebar.selectbox("Local / Associação", locais_disponiveis)
+# ─── NAVEGAÇÃO E FILTROS (SIDEBAR) ───────────────────────────────────────────
+aba_selecionada = st.sidebar.radio("Selecione o Diagnóstico:", ["Diagnóstico 2024", "Diagnóstico 2026"])
 
-if local_selecionado != "Todos":
-    df_filtrado = df[df['Local'] == local_selecionado].copy()
-else:
-    df_filtrado = df.copy()
+st.sidebar.header("Filtros Específicos")
 
-# ─── FUNÇÃO AUXILIAR ────────────────────────────────────────────
-def get_top_items(series, top_n=6):
-    all_items = series.dropna().astype(str).str.lower().str.replace(r'[./]', ',', regex=True).str.strip()
-    items_list = [item.strip() for sublist in all_items.str.split(',') for item in sublist if item.strip()]
-    counts = pd.Series(items_list).value_counts().head(top_n)
-    return counts.reset_index().rename(columns={'index':'item', 0:'count'})
+if aba_selecionada == "Diagnóstico 2024":
+    try:
+        df_24 = load_data_2024("data/tabela_combinada_final.xlsx")
+        locais_disponiveis = ["Todos"] + sorted(df_24['Local'].dropna().unique().tolist())
+        local_selecionado = st.sidebar.selectbox("Local / Associação", locais_disponiveis)
+        
+        if local_selecionado != "Todos":
+            df_filtrado = df_24[df_24['Local'] == local_selecionado].copy()
+        else:
+            df_filtrado = df_24.copy()
+    except Exception as e:
+        st.error(f"Erro ao carregar dados de 2024: {e}")
+        st.stop()
 
-# ─── KPIs ────────────────────────────────────────────────────────────────────
+else: # Diagnóstico 2026
+    try:
+        df_26 = load_data_2026("data/DiagnosticoTPLC.xlsx")
+        comunidades = st.sidebar.multiselect("Comunidade", options=df_26["Comunidade"].unique(), default=df_26["Comunidade"].unique())
+        generos = st.sidebar.multiselect("Gênero", options=df_26["Genero"].unique(), default=df_26["Genero"].unique())
+        
+        df_filtrado = df_26[(df_26["Comunidade"].isin(comunidades)) & (df_26["Genero"].isin(generos))]
+    except Exception as e:
+        st.error(f"Erro ao carregar dados de 2026: {e}")
+        st.stop()
 
-# Abas paginais
-tab1, tab2 = st.tabs(["Diagnostico 2024", "Diagnostico 2026"])
+# ─── CONTEÚDO PRINCIPAL ──────────────────────────────────────────────────────
 
-#Diagnóstico 2024
-with tab1:
+if aba_selecionada == "Diagnóstico 2024":
     st.title("📊 Diagnóstico da Atividade Pesqueira 2024")
     st.markdown("---")
 
     col1, col2, col3, col4, col5 = st.columns(5)
-
-    avg_kilos     = df_filtrado['Kilos_Medios_Num'].mean()
-    avg_days      = df_filtrado['Dias_Pesca_Num'].mean()
+    avg_kilos = df_filtrado['Kilos_Medios_Num'].mean()
+    avg_days = df_filtrado['Dias_Pesca_Num'].mean()
     avg_kilos_ruim = df_filtrado['Kilos_Mar_Ruim_Num'].mean()
-    avg_time      = df_filtrado['Tempo_Pesca_Horas_Num'].mean()
-    avg_idade     = df_filtrado['Idade'].mean()
+    avg_time = df_filtrado['Tempo_Pesca_Horas_Num'].mean()
+    avg_idade = df_filtrado['Idade'].mean()
 
-    col1.metric("Média Captura (kg)",     f"{avg_kilos:.1f}")
-    col2.metric("Dias/semana (melhor época)", f"{avg_days:.1f}")
-    col3.metric("Captura mar ruim (kg)",  f"{avg_kilos_ruim:.1f}",
-                delta=f"{(avg_kilos_ruim / avg_kilos * 100 - 100):+.1f}%" if avg_kilos > 0 else "—")
-    col4.metric("Tempo médio no mar",     f"{avg_time:.1f} h")
-    col5.metric("Idade média",            f"{avg_idade:.1f} anos" if not pd.isna(avg_idade) else "—")
-
-    st.markdown("---")
+    col1.metric("Média Captura (kg)", f"{avg_kilos:.1f}")
+    col2.metric("Dias/semana", f"{avg_days:.1f}")
+    col3.metric("Captura mar ruim (kg)", f"{avg_kilos_ruim:.1f}", 
+                delta=f"{(avg_kilos_ruim/avg_kilos*100-100):+.1f}%" if avg_kilos > 0 else "—")
+    col4.metric("Tempo médio no mar", f"{avg_time:.1f} h")
+    col5.metric("Idade média", f"{avg_idade:.1f} anos" if not pd.isna(avg_idade) else "—")
 
     # ─── PRIMEIRA LINHA ──────────────────────────────────────────────────────────
     col_g1, col_g2, col_g3 = st.columns(3)
@@ -271,93 +277,40 @@ with tab1:
     st.markdown("---")
     st.caption("Dashboard construído com base nas entrevistas realizadas pela Cia. Portos e hidrovias do Piaui.")
 
-#----------------------------------------------Fim Diagnostico 2024 -----------------------------------------------------------------------------
-
-with tab2:
-# 1. Carregamento e Limpeza Básica
-    @st.cache_data
-    def load_data_2026():
-        df = pd.read_excel("data/DiagnosticoTPLC.xlsx")
-        
-        # Limpeza básica de strings
-        cols_texto = df.select_dtypes(include=['object']).columns
-        for col in cols_texto:
-            df[col] = df[col].str.strip().str.upper()
-        
-        return df
-
-    df = load_data_2026()
-
-    # --- SIDEBAR (Filtros) ---
-    st.sidebar.header("Filtros")
-    comunidade = st.sidebar.multiselect(
-        "Selecione a Comunidade",
-        options=df["Comunidade"].unique(),
-        default=df["Comunidade"].unique()
-    )
-
-    genero = st.sidebar.multiselect(
-        "Gênero",
-        options=df["Genero"].unique(),
-        default=df["Genero"].unique()
-    )
-
-    # Aplicando os filtros
-    df_filtered = df[(df["Comunidade"].isin(comunidade)) & (df["Genero"].isin(genero))]
-
-    # --- DASHBOARD PRINCIPAL ---
+else: # Diagnóstico 2026
     st.title("📊 Diagnóstico da Atividade Pesqueira 2026")
-    st.markdown(f"Exibindo dados de **{len(df_filtered)}** pescadores entrevistados.")
+    st.markdown(f"Exibindo dados de **{len(df_filtrado)}** pescadores entrevistados.")
 
-    # Linha 1: Métricas e Perfil
     col1, col2 = st.columns(2)
-
     with col1:
         st.subheader("Distribuição por Idade")
-        fig_idade = px.pie(df_filtered, names='Idade', hole=0.4, 
-                        color_discrete_sequence=px.colors.qualitative.Pastel)
+        fig_idade = px.pie(df_filtrado, names='Idade', hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig_idade, use_container_width=True)
 
     with col2:
         st.subheader("Renda Mensal Familiar")
-        # Ordenando manualmente as categorias de renda para o gráfico fazer sentido
         ordem_renda = ["ATE 500,00", "DE 501,00 A 1.000,00", "DE 1.001,00 A 2.000,00", "MAIS DE 2.001,00"]
-        fig_renda = px.bar(df_filtered, x='Renda_mensal_total_familia', 
-                        category_orders={"Renda_mensal_total_familia": ordem_renda},
-                        color_discrete_sequence=['#2E8B57'])
+        fig_renda = px.bar(df_filtrado, x='Renda_mensal_total_familia', category_orders={"Renda_mensal_total_familia": ordem_renda}, color_discrete_sequence=['#2E8B57'])
         st.plotly_chart(fig_renda, use_container_width=True)
 
-    # Linha 2: Análise de Espécies (Onde usamos o Explode)
     st.divider()
-    st.subheader("📍 Top Espécies Capturadas")
-
-    # Tratamento para colunas com múltiplos valores (separados por ;)
-    especies_series = df_filtered['Especies_importantes_captrura'].dropna().str.split(';').explode()
+    st.subheader("📍 Top Espécies Capturadas (2026)")
+    especies_series = df_filtrado['Especies_importantes_captrura'].dropna().str.split(';').explode()
     df_especies = especies_series.value_counts().reset_index()
-    df_especies.columns = ['Espécie', 'Contagem']
-
-    fig_especies = px.bar(df_especies.head(10), x='Contagem', y='Espécie', 
-                        orientation='h', color='Contagem',
-                        color_continuous_scale='Viridis')
+    fig_especies = px.bar(df_especies.head(10), x='count', y='Especies_importantes_captrura', orientation='h', color='count', color_continuous_scale='Viridis')
     st.plotly_chart(fig_especies, use_container_width=True)
 
-    # Linha 3: Artes de Pesca e Problemas
-    col3, col4 = st.columns(2)
-
-    with col3:
-        st.subheader("Artes de Pesca Utilizadas")
-        artes_series = df_filtered['Arte_pesca'].dropna().str.split(';').explode()
+    c3, c4 = st.columns(2)
+    with c3:
+        st.subheader("Artes de Pesca")
+        artes_series = df_filtrado['Arte_pesca'].dropna().str.split(';').explode()
         df_artes = artes_series.value_counts().reset_index()
-        fig_artes = px.funnel(df_artes, x='count', y='Arte_pesca')
-        st.plotly_chart(fig_artes, use_container_width=True)
-
-    with col4:
-        st.subheader("Principais Fatores Prejudiciais")
-        fatores_series = df_filtered['Fatores_prejudicam_pesca'].dropna().str.split(';').explode()
+        st.plotly_chart(px.funnel(df_artes, x='count', y='Arte_pesca'), use_container_width=True)
+    
+    with c4:
+        st.subheader("Fatores Prejudiciais")
+        fatores_series = df_filtrado['Fatores_prejudicam_pesca'].dropna().str.split(';').explode()
         df_fatores = fatores_series.value_counts().reset_index()
-        fig_fatores = px.treemap(df_fatores, path=['Fatores_prejudicam_pesca'], values='count')
-        st.plotly_chart(fig_fatores, use_container_width=True)
+        st.plotly_chart(px.treemap(df_fatores, path=['Fatores_prejudicam_pesca'], values='count'), use_container_width=True)
 
-    # Visualização da Tabela
-    #if st.checkbox("Mostrar dados brutos"):
-    #   st.dataframe(df_filtered)
+st.sidebar.caption("Dashboard construído pela Cia. Portos e hidrovias do Piaui.")
