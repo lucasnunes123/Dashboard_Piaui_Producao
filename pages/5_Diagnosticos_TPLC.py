@@ -12,25 +12,49 @@ def add_bg_from_local(image_file):
     try:
         with open(image_file, "rb") as f:
             encoded_string = base64.b64encode(f.read())
-        st.markdown(
-            f"""
+        st.markdown(f"""
             <style>
+            /* Fundo da página */
             .stApp {{
-                background-image: url("data:image/png;base64,{encoded_string.decode()}");
-                background-attachment: fixed;
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: 170% 0%;
+                background-color: #f4f7f6;
             }}
-            [data-testid="stVerticalBlock"] > div {{
-                background-color: rgba(255, 255, 255, 0.8); 
+            
+            /* Customizando o Sidebar */
+            [data-testid="stSidebar"] {{
+                background-color: #ffffff;
+                border-right: 1px solid #e0e0e0;
+            }}
+            
+            /* Estilização dos Cards dos Gráficos */
+            div[data-testid="stVerticalBlock"] > div[style*="flex-direction: column;"] > div {{
+                background-color: white;
+                padding: 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                border: 1px solid #ececec;
+                margin-bottom: 20px;
+            }}
+
+            /* Títulos e Métricas */
+            h1, h2, h3 {{
+                color: #1e4d25 !important;
+                font-weight: 700 !important;
+            }}
+            
+            .stMetric {{
+                background-color: #ffffff;
+                padding: 15px;
                 border-radius: 10px;
-                padding: 10px;
+                border-left: 5px solid #1e4d25;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }}
+            
+            /* Ajuste de margens das colunas */
+            [data-testid="column"] {{
+                padding: 0 10px !important;
             }}
             </style>
-            """,
-            unsafe_allow_html=True
-        )
+            """, unsafe_allow_html=True)
     except:
         pass
 
