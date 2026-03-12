@@ -144,6 +144,7 @@ else: # Diagnóstico 2026
         st.stop()
 
 # ─── CONTEÚDO PRINCIPAL ──────────────────────────────────────────────────────
+# ─── DIAGNOSTICO 2024 ──────────────────────────────────────────────────────
 
 if aba_selecionada == "Diagnóstico 2024":
     st.title("📊 Diagnóstico da Atividade Pesqueira 2024")
@@ -301,7 +302,9 @@ if aba_selecionada == "Diagnóstico 2024":
     st.markdown("---")
     st.caption("Dashboard construído com base nas entrevistas realizadas pela Cia. Portos e hidrovias do Piaui.")
 
-else: # Diagnóstico 2026
+# ─── DIAGNOSTICO 2026 ──────────────────────────────────────────────────────
+
+else:
     st.title("📊 Diagnóstico da Atividade Pesqueira 2026")
     st.markdown(f"Exibindo dados de **{len(df_filtrado)}** pescadores entrevistados.")
 
