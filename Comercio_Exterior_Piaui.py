@@ -305,7 +305,7 @@ try:
                 )
                 st.plotly_chart(fig_heatmap, use_container_width=True)
 
-                # Top 10 municípios
+            # Top 10 municípios
             st.subheader("Top 10 Municípios por Valor Comercial")
 
             top_municipios = filtered_df.groupby('Município')['Valor US$ FOB'].sum().reset_index()
